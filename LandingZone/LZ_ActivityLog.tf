@@ -41,3 +41,5 @@ resource "azurerm_monitor_log_profile" "example" {
     days    = 7
   }
 }
+
+##커밋 테스트!
