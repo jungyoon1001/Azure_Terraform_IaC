@@ -43,4 +43,3 @@ resource "azurerm_monitor_log_profile" "example" {
 }
 
 
-## 커밋 테스트!!!!!!!!!!!!!!!!
