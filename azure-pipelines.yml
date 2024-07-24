@@ -1,0 +1,41 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: terraform-variables
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '5.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'your-service-connection-name'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      # Install Terraform
+      curl -s https://raw.githubusercontent.com/hashicorp/terraform/master/scripts/install.sh | bash
+      
+      # Initialize Terraform
+      terraform init
+
+      # Plan and Apply Terraform
+      terraform plan -out=tfplan -input=false \
+        -var "subscription_id=$(subscription_id)" \
+        -var "client_id=$(client_id)" \
+        -var "client_secret=$(client_secret)" \
+        -var "tenant_id=$(tenant_id)"
+      
+      terraform apply -input=false tfplan
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
+    ArtifactName: 'drop'
